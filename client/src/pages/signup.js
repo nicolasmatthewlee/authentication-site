@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export const SignUp = () => {
   return (
     <div className="container-fluid position-absolute h-100 p-0">
@@ -54,7 +56,7 @@ export const SignUp = () => {
           </form>
 
           <p>
-            Already have an account? <a href="/">Sign in</a>
+            Already have an account? <Link to="/">Sign in</Link>
           </p>
         </div>
         <div className="d-none d-md-inline col-md-6 bg-dark"></div>

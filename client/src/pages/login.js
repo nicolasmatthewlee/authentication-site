@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export const Login = () => {
   return (
     <div className="container-fluid position-absolute h-100 p-0">
@@ -54,7 +56,7 @@ export const Login = () => {
           </form>
 
           <p>
-            Don't have an account? <a href="/signup">Sign up</a>
+            Don't have an account? <Link to="/signup">Sign up</Link>
           </p>
         </div>
         <div className="d-none d-md-inline col-md-6 bg-dark"></div>
