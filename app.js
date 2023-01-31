@@ -5,6 +5,11 @@ const path = require("path");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+
 const User = require("./models/user");
 
 // connect to MongoDB
@@ -16,11 +21,52 @@ mongoose.connection.on("error", (err) => {
   if (err) throw err;
 });
 
+// set up LocalStrategy to be called on passport.authenticate()
+passport.use(
+  new LocalStrategy((username, password, cb) => {
+    // find user in database
+    User.findOne({ username: username }, (err, user) => {
+      //if err, return error
+      if (err) return cb(err);
+      // if no user, return false (2nd parameter)
+      if (!user)
+        return cb(null, false, { message: "Incorrect username or password." });
+      // if passswords do not match, return false (2nd parameter)
+      if (user.password !== password)
+        return cb(null, false, { message: "Incorrect username or password." });
+      // user found, password matches, return user
+      else return cb(null, user);
+    });
+  })
+);
+
 // create application
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// session support (saves to mongoDB in "sessions" collection)
+app.use(
+  session({
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB,
+      collectionName: "sessions",
+    }),
+  })
+);
+// authenticate session with passportJS
+app.use(passport.authenticate("session"));
+
+// configure Passport to persist user information in the login session
+passport.serializeUser((user, done) => done(null, user.id));
+passport.deserializeUser((id, done) =>
+  User.findById(id, (err, user) => done(err, user))
+);
+
+// serve client build
 app.use(express.static(path.join(__dirname, "/client/build")));
 
 // define routes
@@ -41,9 +87,16 @@ app.post("/signup", (req, res, next) => {
   });
 });
 
-app.post("/login", (req, res, next) => {
-  // authentication goes here
-});
+app.post("/login", (req, res, next) =>
+  passport.authenticate("local", (err, user, info, status) => {
+    // if error, return error
+    if (err) return next(err);
+    // user set to false when authentication fails
+    // if authentication fails, return 'invalid credentials'
+    if (!user) return res.json({ err: "Invalid credentials." });
+    res.json({ err: false });
+  })(req, res, next)
+);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "/client/build/index.html"));
@@ -58,7 +111,7 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   if (err) {
     console.log(err);
-    res.status(500).json({ err: err.message });
+    res.status(500).json({ err: "An unknown error occurred." });
   }
 });
 
