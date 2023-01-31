@@ -1,6 +1,34 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export const Login = () => {
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://127.0.0.1:8000/login", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+      const responseJSON = await response.json();
+      const err = responseJSON.err;
+
+      if (err) console.log(err);
+      else {
+        // redirect to home
+        navigate("/home");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="container-fluid position-absolute h-100 p-0">
       <div className="row g-0 h-100">
@@ -24,6 +52,7 @@ export const Login = () => {
                   name="username"
                   id="username"
                   placeholder="Enter your username"
+                  onChange={(e) => setUsername(e.target.value)}
                 />
               </div>
             </div>
@@ -43,11 +72,15 @@ export const Login = () => {
                   name="password"
                   id="password"
                   placeholder="Enter your password"
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
             </div>
 
-            <button className="mb-3 btn btn-dark w-100" type="submit">
+            <button
+              onClick={(e) => handleSubmit(e)}
+              className="mb-3 btn btn-dark w-100"
+            >
               Sign In
             </button>
             <button className="mb-3 btn btn-light w-100">

@@ -22,7 +22,7 @@ export const SignUp = () => {
 
       if (err) console.log(err);
       else {
-        // redirect to home
+        // redirect to login
         navigate("/");
       }
     } catch (err) {

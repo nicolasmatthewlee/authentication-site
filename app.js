@@ -41,15 +41,24 @@ app.post("/signup", (req, res, next) => {
   });
 });
 
+app.post("/login", (req, res, next) => {
+  // authentication goes here
+});
+
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "/client/build/index.html"));
+});
+
+// any other request
+app.use((req, res, next) => {
+  next(new Error("Route not found."));
 });
 
 // error handler
 app.use((err, req, res, next) => {
   if (err) {
     console.log(err);
-    res.status(500).json({ err: "An unknown error occured." });
+    res.status(500).json({ err: err.message });
   }
 });
 
