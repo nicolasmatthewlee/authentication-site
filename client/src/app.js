@@ -6,7 +6,7 @@ export const App = () => {
     <div className="App">
       <div className="container-fluid position-absolute h-100 p-0">
         <div className="row g-0 h-100">
-          <div className="col-6 d-flex flex-column align-items-center justify-content-center">
+          <div className="col-12 col-md-6 d-flex flex-column align-items-center justify-content-center">
             <h1 className="mt-3 mb-1">Welcome back!</h1>
             <p className="text-muted">Please enter your credentials.</p>
 
@@ -61,7 +61,7 @@ export const App = () => {
               Don't have an account? <a href="">Sign up</a>
             </p>
           </div>
-          <div className="col-6 bg-dark"></div>
+          <div className="d-none d-md-inline col-md-6 bg-dark"></div>
         </div>
       </div>
     </div>
