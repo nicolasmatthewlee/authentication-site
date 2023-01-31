@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-export const Login = () => {
+export const Login = (props) => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -21,6 +21,7 @@ export const Login = () => {
 
       if (err) console.log(err);
       else {
+        props.setUser({ username: responseJSON.username });
         // redirect to home
         navigate("/home");
       }

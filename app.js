@@ -94,7 +94,7 @@ app.post("/login", (req, res, next) =>
     // user set to false when authentication fails
     // if authentication fails, return 'invalid credentials'
     if (!user) return res.json({ err: "Invalid credentials." });
-    res.json({ err: false });
+    res.json({ err: false, username: user.username });
   })(req, res, next)
 );
 
