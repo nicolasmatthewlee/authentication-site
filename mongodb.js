@@ -13,12 +13,13 @@ mongoose.connection.on("error", (err) => {
 const User = require("./models/user");
 
 const performOperations = async () => {
-  try {
-    await User.deleteMany({ username: "adsf" });
-    console.log("Deletion successful.");
-  } catch (err) {
-    console.log(err);
-  }
+  // delete users
+  //   try {
+  //     await User.deleteMany({ username: "adsf" });
+  //     console.log("Deletion successful.");
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
 
   User.find().exec((err, result) => {
     if (err) console.log(err);

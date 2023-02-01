@@ -83,6 +83,7 @@ app.post("/signup", (req, res, next) => {
   const user = new User({
     username: req.body.username,
     password: req.body.password,
+    status: "user",
   });
 
   user.save((err, result) => {
@@ -144,6 +145,23 @@ app.get("/message", (req, res, next) => {
     // no error
     res.send(result);
   });
+});
+
+app.post("/register", (req, res, next) => {
+  if (!req.user) res.json({ err: "Unauthorized." });
+  // user authenticated
+
+  // check if password matches REGISTER_PASSWORD
+  if (req.body.password === process.env.MEMBER_KEY) {
+    // approved, update status
+
+    User.findByIdAndUpdate(req.user._id, { status: "member" }).exec(
+      (err, result) => {
+        if (err) return res.json({ err: "Failed to update status." });
+        res.json({ err: false });
+      }
+    );
+  } else res.json({ err: "Incorrect." });
 });
 
 app.get("*", (req, res) => {
