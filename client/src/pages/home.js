@@ -22,8 +22,10 @@ export const Home = () => {
       const responseJSON = await response.json();
       const err = responseJSON.err;
       if (err) console.log(err);
-
-      console.log(responseJSON);
+      else {
+        console.log(responseJSON);
+        setShowPasswordInput(false);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -116,11 +118,14 @@ export const Home = () => {
             className="d-flex flex-column align-items-center w-100"
             style={{ maxWidth: "500px" }}
           >
-            {messages !== null
+            {Array.isArray(messages)
               ? messages.map((m) => (
                   <div key={m._id} className="card w-100 mb-3">
                     <div className="card-body">
-                      <h6 className="card-title">{m.author}</h6>
+                      {m.author ? (
+                        <h6 className="card-title">{m.author}</h6>
+                      ) : null}
+
                       <p className="card-text">{m.content}</p>
                     </div>
                     <div className="card-footer text-muted">{m.datetime}</div>

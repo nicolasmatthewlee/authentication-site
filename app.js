@@ -117,6 +117,7 @@ app.get("/logout", (req, res, next) => {
 });
 
 app.get("/user", (req, res, next) => {
+  if (!req.user) return next();
   res.json({ username: req.user.username });
 });
 
@@ -138,13 +139,23 @@ app.post("/message", (req, res, next) => {
 
 app.get("/message", (req, res, next) => {
   // check if user is authenticated
-  if (!req.user) res.json({ err: "Unauthorized." });
+  if (!req.user) return res.json({ err: "Unauthorized." });
   // user authenticated
-  Message.find({}, { __v: 0 }).exec((err, result) => {
-    if (err) return next(err);
-    // no error
-    res.send(result);
-  });
+
+  // do not send authors back if user.status==='user'
+  if (req.user.status === "user") {
+    Message.find({}, { __v: 0, author: 0 }).exec((err, result) => {
+      if (err) return next(err);
+      // no error
+      res.send(result);
+    });
+  } else {
+    Message.find({}, { __v: 0 }).exec((err, result) => {
+      if (err) return next(err);
+      // no error
+      res.send(result);
+    });
+  }
 });
 
 app.post("/register", (req, res, next) => {
