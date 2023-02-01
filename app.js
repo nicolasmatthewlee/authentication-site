@@ -123,7 +123,6 @@ app.post("/message", (req, res, next) => {
   // check if user is authenticated
   if (!req.user) res.json({ err: "Unauthorized." });
   // user authenticated
-
   const message = new Message({
     content: req.body.message,
     author: req.user.username,
@@ -133,6 +132,17 @@ app.post("/message", (req, res, next) => {
   message.save((err) => {
     if (err) return next(err);
     res.json({ err: false });
+  });
+});
+
+app.get("/message", (req, res, next) => {
+  // check if user is authenticated
+  if (!req.user) res.json({ err: "Unauthorized." });
+  // user authenticated
+  Message.find({}, { __v: 0 }).exec((err, result) => {
+    if (err) return next(err);
+    // no error
+    res.send(result);
   });
 });
 
