@@ -25,6 +25,7 @@ export const Home = () => {
       else {
         console.log(responseJSON);
         setShowPasswordInput(false);
+        getMessages();
       }
     } catch (err) {
       console.log(err);
