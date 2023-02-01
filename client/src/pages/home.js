@@ -25,7 +25,9 @@ export const Home = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/logout");
+      const response = await fetch("http://127.0.0.1:8000/logout", {
+        credentials: "include",
+      });
       const responseJSON = await response.json();
       const err = responseJSON.err;
 
