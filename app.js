@@ -181,13 +181,15 @@ app.post("/register", (req, res, next) => {
 });
 
 app.post("/delete", (req, res, next) => {
-  if (!req.user) res.json({ err: "Unauthorized." });
-  if (req.user.status !== "admin") res.json("Unauthorized.");
-  // admin authenticated
-  Message.findByIdAndDelete(req.body.id).exec((err, result) => {
-    if (err) return next(err);
-    res.json({ err: false });
-  });
+  if (!req.user) return res.json({ err: "Unauthorized." });
+  if (req.user.status !== "admin") return res.json("Unauthorized.");
+  else {
+    // admin authenticated
+    Message.findByIdAndDelete(req.body.id).exec((err, result) => {
+      if (err) return next(err);
+      res.json({ err: false });
+    });
+  }
 });
 
 app.get("*", (req, res) => {
