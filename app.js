@@ -123,7 +123,7 @@ app.get("*", (req, res) => {
 
 // any other request
 app.use((req, res, next) => {
-  next(new Error("Route not found."));
+  res.json({ err: "Route not found." });
 });
 
 // error handler

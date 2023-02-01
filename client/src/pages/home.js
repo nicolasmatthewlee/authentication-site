@@ -5,6 +5,7 @@ export const Home = () => {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
+  const [message, setMessage] = useState("");
 
   const getUser = async () => {
     try {
@@ -22,6 +23,25 @@ export const Home = () => {
   useEffect(() => {
     getUser();
   }, []);
+
+  const handleMessageSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://127.0.0.1:8000/message", {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ message }),
+      });
+      const responseJSON = await response.json();
+      const err = responseJSON.err;
+
+      if (err) console.log(err);
+      else console.log("success");
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -81,8 +101,14 @@ export const Home = () => {
                 className="form-control mb-3"
                 type="text"
                 placeholder="Your message here..."
+                onChange={(e) => setMessage(e.target.value)}
               />
-              <button className="btn btn-primary">Submit</button>
+              <button
+                onClick={(e) => handleMessageSubmit(e)}
+                className="btn btn-primary"
+              >
+                Submit
+              </button>
             </div>
           </div>
         </div>
