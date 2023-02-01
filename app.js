@@ -10,7 +10,9 @@ const LocalStrategy = require("passport-local");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 
+// import models
 const User = require("./models/user");
+const Message = require("./models/message");
 
 // connect to MongoDB
 mongoose.set("strictQuery", false);
@@ -115,6 +117,23 @@ app.get("/logout", (req, res, next) => {
 
 app.get("/user", (req, res, next) => {
   res.json({ username: req.user.username });
+});
+
+app.post("/message", (req, res, next) => {
+  // check if user is authenticated
+  if (!req.user) res.json({ err: "Unauthorized." });
+  // user authenticated
+
+  const message = new Message({
+    content: req.body.message,
+    author: req.user.username,
+    datetime: new Date(),
+  });
+
+  message.save((err) => {
+    if (err) return next(err);
+    res.json({ err: false });
+  });
 });
 
 app.get("*", (req, res) => {
