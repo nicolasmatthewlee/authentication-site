@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-export const Login = (props) => {
+export const Login = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -14,17 +14,14 @@ export const Login = (props) => {
         headers: {
           "content-type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({ username, password }),
       });
       const responseJSON = await response.json();
       const err = responseJSON.err;
 
       if (err) console.log(err);
-      else {
-        props.setUser({ username: responseJSON.username });
-        // redirect to home
-        navigate("/home");
-      }
+      else navigate(`/home`); // redirect to home
     } catch (err) {
       console.log(err);
     }

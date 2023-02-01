@@ -1,7 +1,27 @@
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
-export const Home = (props) => {
+export const Home = () => {
   const navigate = useNavigate();
+
+  const [username, setUsername] = useState("");
+
+  const getUser = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/user", {
+        method: "get",
+        credentials: "include",
+      });
+      const responseJSON = await response.json();
+      setUsername(responseJSON.username);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -27,7 +47,7 @@ export const Home = (props) => {
     <div className="container-fluid p-3 pt-0">
       <div className="row py-3 shadow-sm d-flex align-items-center">
         <div className="col">
-          <h1 className="m-0">Welcome, {props.user.username}</h1>
+          <h1 className="m-0">Welcome, {username}</h1>
         </div>
         <div className="col-auto">
           <button className="btn btn-dark" onClick={handleLogout}>

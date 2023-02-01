@@ -42,7 +42,7 @@ passport.use(
 
 // create application
 const app = express();
-app.use(cors());
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use(express.json());
 
 // session support (saves to mongoDB in "sessions" collection)
@@ -51,16 +51,19 @@ app.use(
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: false,
+    cookie: { secure: false },
     store: MongoStore.create({
       mongoUrl: process.env.MONGODB,
       collectionName: "sessions",
     }),
   })
 );
+
 // authenticate session with passportJS
 app.use(passport.authenticate("session"));
 
 // configure Passport to persist user information in the login session
+// necessary to add user object to req as req.user
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser((id, done) =>
   User.findById(id, (err, user) => done(err, user))
@@ -94,7 +97,12 @@ app.post("/login", (req, res, next) =>
     // user set to false when authentication fails
     // if authentication fails, return 'invalid credentials'
     if (!user) return res.json({ err: "Invalid credentials." });
-    res.json({ err: false, username: user.username });
+
+    // login user
+    req.logIn(user, (err) => {
+      if (err) return next(err);
+      res.json({ err: false, user: user.username });
+    });
   })(req, res, next)
 );
 
@@ -103,6 +111,10 @@ app.get("/logout", (req, res, next) => {
     if (err) return next(err);
     res.json({ err: false });
   });
+});
+
+app.get("/user", (req, res, next) => {
+  res.json({ username: req.user.username });
 });
 
 app.get("*", (req, res) => {
