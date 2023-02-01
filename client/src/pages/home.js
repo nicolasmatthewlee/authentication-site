@@ -5,6 +5,7 @@ export const Home = () => {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
+  const [status, setStatus] = useState(null);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState(null);
 
@@ -32,6 +33,26 @@ export const Home = () => {
     }
   };
 
+  const handleDeleteMessage = async (id) => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/delete", {
+        method: "post",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const responseJSON = await response.json();
+      const err = responseJSON.err;
+      if (err) console.log(err);
+      else {
+        console.log(responseJSON);
+        getMessages();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const getUser = async () => {
     try {
       const response = await fetch("http://127.0.0.1:8000/user", {
@@ -39,6 +60,7 @@ export const Home = () => {
       });
       const responseJSON = await response.json();
       setUsername(responseJSON.username);
+      setStatus(responseJSON.status);
     } catch (err) {
       console.log(err);
     }
@@ -120,18 +142,43 @@ export const Home = () => {
             style={{ maxWidth: "500px" }}
           >
             {Array.isArray(messages)
-              ? messages.map((m) => (
-                  <div key={m._id} className="card w-100 mb-3">
-                    <div className="card-body">
-                      {m.author ? (
-                        <h6 className="card-title">{m.author}</h6>
-                      ) : null}
-
-                      <p className="card-text">{m.content}</p>
+              ? messages.map((m) =>
+                  status === "admin" ? (
+                    <div className="w-100 mb-3" key={m._id}>
+                      <div className="card rounded-0 rounded-top">
+                        <div className="card-body">
+                          {m.author ? (
+                            <h6 className="card-title">{m.author}</h6>
+                          ) : null}
+                          <p className="card-text">{m.content}</p>
+                        </div>
+                        <div className="card-footer text-muted">
+                          {m.datetime}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleDeleteMessage(m._id)}
+                        className="btn btn-danger rounded-0 rounded-bottom w-100"
+                      >
+                        Delete
+                      </button>
                     </div>
-                    <div className="card-footer text-muted">{m.datetime}</div>
-                  </div>
-                ))
+                  ) : (
+                    <div className="w-100 mb-3" key={m._id}>
+                      <div className="card">
+                        <div className="card-body">
+                          {m.author ? (
+                            <h6 className="card-title">{m.author}</h6>
+                          ) : null}
+                          <p className="card-text">{m.content}</p>
+                        </div>
+                        <div className="card-footer text-muted">
+                          {m.datetime}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                )
               : null}
           </div>
 

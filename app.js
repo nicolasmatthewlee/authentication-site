@@ -118,7 +118,7 @@ app.get("/logout", (req, res, next) => {
 
 app.get("/user", (req, res, next) => {
   if (!req.user) return next();
-  res.json({ username: req.user.username });
+  res.json({ username: req.user.username, status: req.user.status });
 });
 
 app.post("/message", (req, res, next) => {
@@ -163,16 +163,31 @@ app.post("/register", (req, res, next) => {
   // user authenticated
 
   // check if password matches REGISTER_PASSWORD
-  if (req.body.password === process.env.MEMBER_KEY) {
+  if (
+    req.body.password === process.env.MEMBER_KEY ||
+    req.body.password === process.env.ADMIN_KEY
+  ) {
     // approved, update status
+    const newStatus =
+      req.body.password === process.env.MEMBER_KEY ? "member" : "admin";
 
-    User.findByIdAndUpdate(req.user._id, { status: "member" }).exec(
+    User.findByIdAndUpdate(req.user._id, { status: newStatus }).exec(
       (err, result) => {
         if (err) return res.json({ err: "Failed to update status." });
         res.json({ err: false });
       }
     );
   } else res.json({ err: "Incorrect." });
+});
+
+app.post("/delete", (req, res, next) => {
+  if (!req.user) res.json({ err: "Unauthorized." });
+  if (req.user.status !== "admin") res.json("Unauthorized.");
+  // admin authenticated
+  Message.findByIdAndDelete(req.body.id).exec((err, result) => {
+    if (err) return next(err);
+    res.json({ err: false });
+  });
 });
 
 app.get("*", (req, res) => {
