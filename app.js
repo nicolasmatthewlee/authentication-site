@@ -98,6 +98,13 @@ app.post("/login", (req, res, next) =>
   })(req, res, next)
 );
 
+app.get("/logout", (req, res, next) => {
+  req.logout((err) => {
+    if (err) return next(err);
+    res.json({ err: false });
+  });
+});
+
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "/client/build/index.html"));
 });
