@@ -26,6 +26,7 @@ export const Home = (props) => {
       else {
         console.log(responseJSON);
         setShowPasswordInput(false);
+        getUser();
         getMessages();
       }
     } catch (err) {
