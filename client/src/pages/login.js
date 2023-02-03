@@ -29,6 +29,10 @@ export const Login = (props) => {
 
   return (
     <div className="container-fluid position-absolute h-100 p-0">
+      <h1 className="position-absolute top-0 shadow-sm p-3 m-0 w-100">
+        <i className="bi-patch-check-fill" style={{ color: "black" }}></i>{" "}
+        <span className="ms-2">Authentication Corp.</span>
+      </h1>
       <div className="row g-0 h-100">
         <div className="col-12 col-md-6 d-flex flex-column align-items-center justify-content-center">
           <h1 className="mt-3 mb-1">Welcome back!</h1>
