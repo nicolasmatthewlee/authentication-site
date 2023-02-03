@@ -7,6 +7,8 @@ const cors = require("cors");
 
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
+const bcrypt = require("bcryptjs");
+
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 
@@ -34,10 +36,14 @@ passport.use(
       if (!user)
         return cb(null, false, { message: "Incorrect username or password." });
       // if passswords do not match, return false (2nd parameter)
-      if (user.password !== password)
-        return cb(null, false, { message: "Incorrect username or password." });
-      // user found, password matches, return user
-      else return cb(null, user);
+      bcrypt.compare(password, user.password, (err, res) => {
+        if (err) return next(err);
+        if (res) return cb(null, user); // passwords match
+        else
+          return cb(null, false, {
+            message: "Incorrect username or password.",
+          });
+      });
     });
   })
 );
@@ -80,17 +86,21 @@ app.post("/signup", (req, res, next) => {
   // validation here (skipped for now)
   // for error handling, see format of error handler below
 
-  // save user
-  const user = new User({
-    username: req.body.username,
-    password: req.body.password,
-    status: "user",
-  });
-
-  user.save((err, result) => {
+  bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
     if (err) return next(err);
-    // saved
-    res.json({ err: false });
+
+    // save user
+    const user = new User({
+      username: req.body.username,
+      password: hashedPassword,
+      status: "user",
+    });
+
+    user.save((err, result) => {
+      if (err) return next(err);
+      // saved
+      res.json({ err: false });
+    });
   });
 });
 
