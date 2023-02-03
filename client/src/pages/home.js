@@ -173,8 +173,8 @@ export const Home = (props) => {
 
         <div className="row mt-3 d-flex justify-content-center gx-3">
           <div
-            className="d-flex flex-column align-items-center w-100"
-            style={{ maxWidth: "500px" }}
+            className="d-flex flex-column align-items-center w-100 overflow-auto"
+            style={{ maxWidth: "500px", marginBottom: "190px" }}
           >
             {Array.isArray(messages)
               ? messages.map((m) =>
@@ -218,23 +218,27 @@ export const Home = (props) => {
                 )
               : null}
           </div>
-
-          <div className="col-12" style={{ maxWidth: "500px" }}>
-            <div className="card w-100">
-              <div className="card-body">
-                <h6 className="card-text">Create Post</h6>
-                <textarea
-                  className="form-control my-3"
-                  type="text"
-                  placeholder="Your message here..."
-                  onChange={(e) => setMessage(e.target.value)}
-                />
-                <button
-                  onClick={handleMessageSubmit}
-                  className="btn btn-primary"
-                >
-                  Submit
-                </button>
+          <div
+            className="fixed-bottom d-flex justify-content-center"
+            style={{ marginBottom: "70px" }}
+          >
+            <div className="col-12" style={{ maxWidth: "550px" }}>
+              <div className="card w-100 shadow-lg">
+                <div className="card-body">
+                  <h6 className="card-text">Create Post</h6>
+                  <textarea
+                    className="form-control my-3"
+                    type="text"
+                    placeholder="Your message here..."
+                    onChange={(e) => setMessage(e.target.value)}
+                  />
+                  <button
+                    onClick={handleMessageSubmit}
+                    className="btn btn-primary"
+                  >
+                    Submit
+                  </button>
+                </div>
               </div>
             </div>
           </div>
