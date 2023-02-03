@@ -187,7 +187,7 @@ export const Home = (props) => {
           <div className="col-12" style={{ maxWidth: "500px" }}>
             <div className="card w-100">
               <div className="card-body">
-                <h6 className="card-text">Add Post</h6>
+                <h6 className="card-text">Create Post</h6>
                 <textarea
                   className="form-control my-3"
                   type="text"
