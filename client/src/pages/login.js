@@ -29,6 +29,38 @@ export const Login = (props) => {
 
   return (
     <div className="container-fluid position-absolute h-100 p-0">
+      <div
+        className="modal fade"
+        id="googleModal"
+        tabIndex="-1"
+        role="dialog"
+        aria-labelledby="googleModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Service Unavailable</h5>
+              <button
+                type="button"
+                className="btn btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+
+            <div className="modal-body">
+              <p>
+                Sign in with Google is currently unavailable. <br></br>To see an
+                implementation, check out{" "}
+                <a href="https://github.com/nicolasmatthewlee/passportJS-google-oath">
+                  this repository.
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <h1 className="position-absolute top-0 shadow-sm p-3 m-0 w-100">
         <i className="bi-patch-check-fill" style={{ color: "black" }}></i>{" "}
         <span className="ms-2">Authentication Corp.</span>
@@ -85,7 +117,12 @@ export const Login = (props) => {
             >
               Sign In
             </button>
-            <button className="mb-3 btn btn-light w-100">
+            <button
+              type="button"
+              data-bs-toggle="modal"
+              data-bs-target="#googleModal"
+              className="mb-3 btn btn-light w-100"
+            >
               <i className="bi-google"></i> Sign In with Google
             </button>
           </form>
