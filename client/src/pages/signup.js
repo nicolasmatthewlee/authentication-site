@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-export const SignUp = () => {
+export const SignUp = (props) => {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
@@ -10,7 +10,7 @@ export const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://127.0.0.1:8000/signup", {
+      const response = await fetch(`${props.server}/signup`, {
         method: "POST",
         headers: {
           "content-type": "application/json",

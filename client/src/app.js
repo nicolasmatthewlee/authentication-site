@@ -9,12 +9,14 @@ import { Home } from "./pages/home";
 import { PageNotFound } from "./pages/page-not-found";
 
 export const App = () => {
+  const server = "http://127.0.0.1:8000";
+
   return (
     <div className="app">
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/" element={<Login server={server} />} />
+        <Route path="/signup" element={<SignUp server={server} />} />
+        <Route path="/home" element={<Home server={server} />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </div>

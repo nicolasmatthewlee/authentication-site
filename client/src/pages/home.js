@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
-export const Home = () => {
+export const Home = (props) => {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
@@ -14,7 +14,7 @@ export const Home = () => {
 
   const handleSubmitPassword = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/register", {
+      const response = await fetch(`${props.server}/register`, {
         method: "post",
         credentials: "include",
         headers: { "content-type": "application/json" },
@@ -35,7 +35,7 @@ export const Home = () => {
 
   const handleDeleteMessage = async (id) => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/delete", {
+      const response = await fetch(`${props.server}/delete`, {
         method: "post",
         credentials: "include",
         headers: { "content-type": "application/json" },
@@ -55,7 +55,7 @@ export const Home = () => {
 
   const getUser = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/user", {
+      const response = await fetch(`${props.server}/user`, {
         credentials: "include",
       });
       const responseJSON = await response.json();
@@ -72,7 +72,7 @@ export const Home = () => {
 
   const getMessages = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/message", {
+      const response = await fetch(`${props.server}/message`, {
         credentials: "include",
       });
       const responseJSON = await response.json();
@@ -88,7 +88,7 @@ export const Home = () => {
 
   const handleMessageSubmit = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/message", {
+      const response = await fetch(`${props.server}/message`, {
         method: "POST",
         credentials: "include",
         headers: { "content-type": "application/json" },
@@ -106,7 +106,7 @@ export const Home = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/logout", {
+      const response = await fetch(`${props.server}/logout`, {
         credentials: "include",
       });
       const responseJSON = await response.json();
