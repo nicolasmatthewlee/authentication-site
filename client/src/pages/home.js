@@ -149,7 +149,9 @@ export const Home = (props) => {
                         <div className="card-body">
                           {m.author ? (
                             <h6 className="card-title">{m.author}</h6>
-                          ) : null}
+                          ) : (
+                            <h6 className="card-title">anonymous</h6>
+                          )}
                           <p className="card-text">{m.content}</p>
                         </div>
                         <div className="card-footer text-muted">
