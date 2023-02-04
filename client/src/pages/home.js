@@ -8,6 +8,7 @@ export const Home = (props) => {
   const [status, setStatus] = useState(null);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState(null);
+  const [messageLoadingError, setMessageLoadingError] = useState(null);
 
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [password, setPassword] = useState("");
@@ -79,14 +80,18 @@ export const Home = (props) => {
   };
 
   const getMessages = async () => {
+    setMessageLoadingError(null);
     try {
       const response = await fetch(`${props.server}/message`, {
         credentials: "include",
       });
       const responseJSON = await response.json();
+
+      if (responseJSON.err)
+        return setMessageLoadingError("Failed to load messages.");
       setMessages(responseJSON);
     } catch (err) {
-      console.log(err);
+      setMessageLoadingError("An unknown error occurred loading messages.");
     }
   };
 
@@ -210,6 +215,13 @@ export const Home = (props) => {
                 className="d-flex flex-column align-items-center w-100 overflow-auto"
                 style={{ maxWidth: "500px", marginBottom: "190px" }}
               >
+                {messageLoadingError ? (
+                  <div className="list-group">
+                    <div className="list-group-item list-group-item-danger">
+                      {messageLoadingError}
+                    </div>
+                  </div>
+                ) : null}
                 {Array.isArray(messages)
                   ? messages.map((m) =>
                       status === "admin" ? (
