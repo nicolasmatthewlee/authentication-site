@@ -1,6 +1,7 @@
 const dotenv = require("dotenv");
 dotenv.config();
 const express = require("express");
+const { body, validationResult } = require("express-validator");
 const path = require("path");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -82,27 +83,45 @@ passport.deserializeUser((id, done) =>
 app.use(express.static(path.join(__dirname, "/client/build")));
 
 // define routes
-app.post("/signup", (req, res, next) => {
-  // validation here (skipped for now)
-  // for error handling, see format of error handler below
+app.post("/signup", [
+  body("username")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Username must be provided.")
+    .isLength({ max: 100 })
+    .withMessage("Username must not exceed 100 characters.")
+    .escape(),
+  body("password")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Password must be provided.")
+    .isLength({ max: 100 })
+    .withMessage("Password must not exceed 100 characters.")
+    .escape(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.json({ err: false, formErrors: errors.errors });
 
-  bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
-    if (err) return next(err);
-
-    // save user
-    const user = new User({
-      username: req.body.username,
-      password: hashedPassword,
-      status: "user",
-    });
-
-    user.save((err, result) => {
+    // validation succeeded
+    bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
       if (err) return next(err);
-      // saved
-      res.json({ err: false });
+
+      // save user
+      const user = new User({
+        username: req.body.username,
+        password: hashedPassword,
+        status: "user",
+      });
+
+      user.save((err, result) => {
+        if (err) return next(err);
+        // saved
+        res.json({ err: false });
+      });
     });
-  });
-});
+  },
+]);
 
 app.post("/login", (req, res, next) =>
   passport.authenticate("local", (err, user, info, status) => {

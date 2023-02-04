@@ -7,8 +7,14 @@ export const SignUp = (props) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState([]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+
+    // send-to-server
     try {
       const response = await fetch(`${props.server}/signup`, {
         method: "POST",
@@ -19,15 +25,19 @@ export const SignUp = (props) => {
       });
       const responseJSON = await response.json();
       const err = responseJSON.err;
+      const formErrors = responseJSON.formErrors;
 
-      if (err) console.log(err);
-      else {
+      if (err || formErrors) {
+        if (err) setErrors([{ msg: err }]);
+        if (formErrors) setErrors(formErrors);
+      } else {
         // redirect to login
         navigate("/");
       }
     } catch (err) {
       console.log(err);
     }
+    setIsLoading(false);
   };
 
   return (
@@ -104,7 +114,7 @@ export const SignUp = (props) => {
                   Password
                 </label>
                 <input
-                  className="form-control mb-4"
+                  className="form-control"
                   type="password"
                   name="password"
                   id="password"
@@ -114,12 +124,38 @@ export const SignUp = (props) => {
               </div>
             </div>
 
-            <button
-              onClick={(e) => handleSubmit(e)}
-              className="mb-3 btn btn-success w-100"
-            >
-              Submit
-            </button>
+            {errors.length > 0 ? (
+              <div className="row m-0 list-group mb-3 mt-3">
+                <div className="list-group-item list-group-item-danger">
+                  <ul className="m-0 p-0 ps-3">
+                    {errors.map((e, i) => (
+                      <li key={i}>{e.msg}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ) : null}
+
+            <div className="row m-0 mt-3">
+              {isLoading ? (
+                <button
+                  onClick={(e) => handleSubmit(e)}
+                  className="mb-3 btn btn-success w-100 px-0"
+                  disabled
+                >
+                  <i className="spinner-border spinner-border-sm"></i>{" "}
+                  Loading...
+                </button>
+              ) : (
+                <button
+                  onClick={(e) => handleSubmit(e)}
+                  className="mb-3 btn btn-success w-100 px-0"
+                >
+                  Submit
+                </button>
+              )}
+            </div>
+
             <button
               type="button"
               data-bs-toggle="modal"
