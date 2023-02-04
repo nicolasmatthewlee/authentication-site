@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 export const Home = (props) => {
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(null);
   const [status, setStatus] = useState(null);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState(null);
@@ -13,6 +13,9 @@ export const Home = (props) => {
   const [password, setPassword] = useState("");
 
   const [logoutLoading, setLogoutLoading] = useState(false);
+
+  const [authorized, setAuthorized] = useState(null);
+  const [authorizationError, setAuthorizationError] = useState(null);
 
   const handleSubmitPassword = async () => {
     try {
@@ -62,16 +65,18 @@ export const Home = (props) => {
         credentials: "include",
       });
       const responseJSON = await response.json();
-      setUsername(responseJSON.username);
-      setStatus(responseJSON.status);
+
+      if (responseJSON.username && responseJSON.status) {
+        setUsername(responseJSON.username);
+        setStatus(responseJSON.status);
+        return { err: false };
+      } else {
+        return responseJSON;
+      }
     } catch (err) {
-      console.log(err);
+      return { err: err };
     }
   };
-
-  useEffect(() => {
-    getUser();
-  }, []);
 
   const getMessages = async () => {
     try {
@@ -84,6 +89,20 @@ export const Home = (props) => {
       console.log(err);
     }
   };
+
+  useEffect(() => {
+    // called to initially set the value of authorized
+    // (and authorizationError, if necessary)
+    const setUser = async () => {
+      const result = await getUser();
+      if (result.err === false) setAuthorized(true);
+      else {
+        setAuthorized(false);
+        setAuthorizationError(result.err);
+      }
+    };
+    setUser();
+  }, []);
 
   useEffect(() => {
     getMessages();
@@ -158,7 +177,7 @@ export const Home = (props) => {
 
   return (
     <div>
-      {username && messages ? (
+      {authorized === true ? (
         <div>
           <div
             className="container-fluid p-3 pt-0"
@@ -303,8 +322,14 @@ export const Home = (props) => {
             className="d-flex flex-column align-items-center position-absolute mt-3"
             style={{ top: "clamp(60px,40%,40%)" }}
           >
-            <h1>Loading resources...</h1>
-            <div className="spinner-border"></div>
+            {authorized === null ? (
+              <>
+                <h1>Loading resources...</h1>
+                <div className="spinner-border"></div>
+              </>
+            ) : (
+              <h1>{authorizationError}</h1>
+            )}
           </div>
         </div>
       )}

@@ -173,7 +173,7 @@ app.get("/logout", (req, res, next) => {
 });
 
 app.get("/user", (req, res, next) => {
-  if (!req.user) return next();
+  if (!req.user) return res.json({ err: "Unauthorized." });
   res.json({ username: req.user.username, status: req.user.status });
 });
 
