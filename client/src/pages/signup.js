@@ -27,15 +27,11 @@ export const SignUp = (props) => {
       const err = responseJSON.err;
       const formErrors = responseJSON.formErrors;
 
-      if (err || formErrors) {
-        if (err) setErrors([{ msg: err }]);
-        if (formErrors) setErrors(formErrors);
-      } else {
-        // redirect to login
-        navigate("/");
-      }
+      if (err) setErrors([{ msg: err }]);
+      else if (formErrors) setErrors(formErrors);
+      else navigate("/"); // redirect to login
     } catch (err) {
-      console.log(err);
+      setErrors([{ msg: "An unknown error occurred." }]);
     }
     setIsLoading(false);
   };
