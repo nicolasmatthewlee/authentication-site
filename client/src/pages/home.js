@@ -74,7 +74,7 @@ export const Home = (props) => {
         return responseJSON;
       }
     } catch (err) {
-      return { err: err };
+      return { err: "An unknown error occurred." };
     }
   };
 
