@@ -123,21 +123,42 @@ app.post("/signup", [
   },
 ]);
 
-app.post("/login", (req, res, next) =>
-  passport.authenticate("local", (err, user, info, status) => {
-    // if error, return error
-    if (err) return next(err);
-    // user set to false when authentication fails
-    // if authentication fails, return 'invalid credentials'
-    if (!user) return res.json({ err: "Invalid credentials." });
-
-    // login user
-    req.logIn(user, (err) => {
+app.post("/login", [
+  body("username")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Username must be provided.")
+    .isLength({ max: 100 })
+    .withMessage("Username must not exceed 100 characters.")
+    .escape(),
+  body("password")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Password must be provided.")
+    .isLength({ max: 100 })
+    .withMessage("Password must not exceed 100 characters.")
+    .escape(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.json({ err: false, formErrors: errors.errors });
+    next();
+  },
+  (req, res, next) =>
+    passport.authenticate("local", (err, user, info, status) => {
+      // if error, return error
       if (err) return next(err);
-      res.json({ err: false, user: user.username });
-    });
-  })(req, res, next)
-);
+      // user set to false when authentication fails
+      // if authentication fails, return 'invalid credentials'
+      if (!user) return res.json({ err: "Invalid credentials." });
+
+      // login user
+      req.logIn(user, (err) => {
+        if (err) return next(err);
+        res.json({ err: false, user: user.username });
+      });
+    })(req, res, next),
+]);
 
 app.get("/logout", (req, res, next) => {
   req.logout((err) => {
