@@ -86,18 +86,23 @@ app.use(express.static(path.join(__dirname, "/client/build")));
 app.post("/signup", [
   body("username")
     .trim()
+    .escape()
     .isLength({ min: 1 })
     .withMessage("Username must be provided.")
     .isLength({ max: 100 })
     .withMessage("Username must not exceed 100 characters.")
-    .escape(),
+    .custom((value) => {
+      return User.findOne({ username: value }).then((user) => {
+        if (user) return Promise.reject("Username already in use.");
+      });
+    }),
   body("password")
     .trim()
+    .escape()
     .isLength({ min: 1 })
     .withMessage("Password must be provided.")
     .isLength({ max: 100 })
-    .withMessage("Password must not exceed 100 characters.")
-    .escape(),
+    .withMessage("Password must not exceed 100 characters."),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty())
@@ -126,18 +131,18 @@ app.post("/signup", [
 app.post("/login", [
   body("username")
     .trim()
+    .escape()
     .isLength({ min: 1 })
     .withMessage("Username must be provided.")
     .isLength({ max: 100 })
-    .withMessage("Username must not exceed 100 characters.")
-    .escape(),
+    .withMessage("Username must not exceed 100 characters."),
   body("password")
     .trim()
+    .escape()
     .isLength({ min: 1 })
     .withMessage("Password must be provided.")
     .isLength({ max: 100 })
-    .withMessage("Password must not exceed 100 characters.")
-    .escape(),
+    .withMessage("Password must not exceed 100 characters."),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty())
