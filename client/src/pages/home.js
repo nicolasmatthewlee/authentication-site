@@ -12,6 +12,8 @@ export const Home = (props) => {
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [password, setPassword] = useState("");
 
+  const [logoutLoading, setLogoutLoading] = useState(false);
+
   const handleSubmitPassword = async () => {
     try {
       const response = await fetch(`${props.server}/register`, {
@@ -106,6 +108,7 @@ export const Home = (props) => {
   };
 
   const handleLogout = async () => {
+    setLogoutLoading(true);
     try {
       const response = await fetch(`${props.server}/logout`, {
         credentials: "include",
@@ -113,11 +116,9 @@ export const Home = (props) => {
       const responseJSON = await response.json();
       const err = responseJSON.err;
 
-      if (err) console.log(err);
-      else navigate("/");
-    } catch (err) {
-      console.log(err);
-    }
+      if (!err) navigate("/");
+    } catch (err) {}
+    setLogoutLoading(false);
   };
 
   const formatTimeSince = (milliseconds) => {
@@ -168,9 +169,20 @@ export const Home = (props) => {
                 <h1 className="m-0">Welcome, {username}</h1>
               </div>
               <div className="col-auto">
-                <button className="btn btn-dark" onClick={handleLogout}>
-                  Logout
-                </button>
+                {logoutLoading ? (
+                  <button
+                    onClick={handleLogout}
+                    className="btn btn-dark"
+                    disabled
+                  >
+                    <i className="spinner-border spinner-border-sm"></i>{" "}
+                    Loading...
+                  </button>
+                ) : (
+                  <button onClick={handleLogout} className="btn btn-dark">
+                    Logout
+                  </button>
+                )}
               </div>
             </div>
 
