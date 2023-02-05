@@ -287,7 +287,7 @@ export const Home = (props) => {
                                   style={{ fontWeight: "500" }}
                                 >
                                   {m.author ? (
-                                    <p>{m.author}</p>
+                                    <p className="m-0">{m.author}</p>
                                   ) : (
                                     <p className="m-0">anonymous</p>
                                   )}
@@ -341,7 +341,7 @@ export const Home = (props) => {
                             onClick={handleMessageSubmit}
                             className="btn btn-primary"
                           >
-                            <i className="bi-send"></i>
+                            <i className="bi-send-fill"></i>
                           </button>
                         </div>
                       </div>
