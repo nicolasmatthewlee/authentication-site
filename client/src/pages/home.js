@@ -180,15 +180,39 @@ export const Home = (props) => {
     return formatTimeSince(now - Date.parse(datetime));
   };
 
+  const getWindowDimensions = () => {
+    const { innerWidth: width, innerHeight: height } = window;
+    return {
+      width,
+      height,
+    };
+  };
+
+  const useWindowDimensions = () => {
+    const [windowDimensions, setWindowDimensions] = useState(
+      getWindowDimensions()
+    );
+
+    useEffect(() => {
+      function handleResize() {
+        setWindowDimensions(getWindowDimensions());
+      }
+
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    return windowDimensions;
+  };
+
+  const { height, width } = useWindowDimensions();
+
   return (
     <div>
       {authorized === true ? (
         <div>
-          <div
-            className="container-fluid p-3 pt-0"
-            style={{ marginBottom: "50px" }}
-          >
-            <div className="row py-3 shadow-sm d-flex align-items-center">
+          <div className="container-fluid p-3 pt-0">
+            <div className="row p-3 shadow-sm d-flex align-items-center bg-white">
               <div className="col">
                 <h1 className="m-0">Welcome, {username}</h1>
               </div>
@@ -210,80 +234,117 @@ export const Home = (props) => {
               </div>
             </div>
 
-            <div className="row mt-3 d-flex justify-content-center gx-3">
+            <div
+              className="row flex-grow-1 justify-content-center gx-3 overflow-auto"
+              style={{
+                height: `calc(${height}px - 50px - 84px)`,
+              }}
+            >
               <div
-                className="d-flex flex-column align-items-center w-100 overflow-auto"
-                style={{ maxWidth: "500px", marginBottom: "190px" }}
+                className="container w-100 m-0 pt-3 d-flex flex-column rounded-top px-3"
+                style={{
+                  maxWidth: "500px",
+                  paddingBottom: "80px",
+                  border: "3px solid whitesmoke",
+                }}
               >
-                {messageLoadingError ? (
-                  <div className="list-group">
-                    <div className="list-group-item list-group-item-danger">
-                      {messageLoadingError}
-                    </div>
+                <div className="row m-0">
+                  <div className="col m-0">
+                    {messageLoadingError ? (
+                      <div className="list-group mb-3">
+                        <div className="list-group-item list-group-item-danger">
+                          {messageLoadingError}
+                        </div>
+                      </div>
+                    ) : null}
+                    {Array.isArray(messages)
+                      ? messages.map((m) =>
+                          status === "admin" ? (
+                            <div className="w-100 mb-3" key={m._id}>
+                              <div className="card rounded-0 rounded-top">
+                                <div className="card-body">
+                                  {m.author ? (
+                                    <h6 className="card-title">{m.author}</h6>
+                                  ) : null}
+                                  <p className="card-text">{m.content}</p>
+                                </div>
+                                <div className="card-footer text-muted">
+                                  {timeSince(m.datetime)}
+                                </div>
+                              </div>
+                              <button
+                                onClick={() => handleDeleteMessage(m._id)}
+                                className="btn btn-danger rounded-0 rounded-bottom w-100"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="container w-100 mb-3" key={m._id}>
+                              <div className="row">
+                                <div
+                                  className="col-auto p-0"
+                                  style={{ fontWeight: "500" }}
+                                >
+                                  {m.author ? (
+                                    <p>{m.author}</p>
+                                  ) : (
+                                    <p className="m-0">anonymous</p>
+                                  )}
+                                </div>
+                                <p
+                                  className="col-auto text-muted p-0 m-0 ms-2"
+                                  style={{
+                                    fontSize: "12px",
+                                    transform: "translateY(4px)",
+                                  }}
+                                >
+                                  {timeSince(m.datetime)}
+                                </p>
+                              </div>
+                              <div className="row">
+                                <div className="col-auto p-1 bg-light rounded border">
+                                  <p className="card-text px-2">{m.content}</p>
+                                </div>
+                              </div>
+                            </div>
+                          )
+                        )
+                      : null}
                   </div>
-                ) : null}
-                {Array.isArray(messages)
-                  ? messages.map((m) =>
-                      status === "admin" ? (
-                        <div className="w-100 mb-3" key={m._id}>
-                          <div className="card rounded-0 rounded-top">
-                            <div className="card-body">
-                              {m.author ? (
-                                <h6 className="card-title">{m.author}</h6>
-                              ) : null}
-                              <p className="card-text">{m.content}</p>
-                            </div>
-                            <div className="card-footer text-muted">
-                              {timeSince(m.datetime)}
-                            </div>
-                          </div>
-                          <button
-                            onClick={() => handleDeleteMessage(m._id)}
-                            className="btn btn-danger rounded-0 rounded-bottom w-100"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="w-100 mb-3" key={m._id}>
-                          <div className="card">
-                            <div className="card-body">
-                              {m.author ? (
-                                <h6 className="card-title">{m.author}</h6>
-                              ) : (
-                                <h6 className="card-title">anonymous</h6>
-                              )}
-                              <p className="card-text">{m.content}</p>
-                            </div>
-                            <div className="card-footer text-muted">
-                              {timeSince(m.datetime)}
-                            </div>
-                          </div>
-                        </div>
-                      )
-                    )
-                  : null}
+                </div>
               </div>
               <div
-                className="fixed-bottom d-flex justify-content-center"
-                style={{ marginBottom: "70px" }}
+                className="container-fluid fixed-bottom d-flex justify-content-center p-0"
+                style={{ marginBottom: "50px" }}
               >
-                <div className="col-12" style={{ maxWidth: "550px" }}>
-                  <div className="card w-100 shadow-lg">
-                    <div className="card-body">
-                      <h6 className="card-text">Create Post</h6>
-                      <textarea
-                        className="form-control my-3"
-                        type="text"
-                        placeholder="Your message here..."
-                        onChange={(e) => setMessage(e.target.value)}
-                      />
-                      <button
-                        onClick={handleMessageSubmit}
-                        className="btn btn-primary"
-                      >
-                        Submit
-                      </button>
+                <div
+                  className="col-12 container-fluid rounded-top bg-white"
+                  style={{
+                    maxWidth: "500px",
+                    borderLeft: "3px solid whitesmoke",
+                    borderRight: "3px solid whitesmoke",
+                    borderTop: "3px solid whitesmoke",
+                  }}
+                >
+                  <div className="container-fluid w-100">
+                    <div className="row my-3">
+                      <div className="col">
+                        <div className="input-group">
+                          <input
+                            className="form-control"
+                            type="text"
+                            placeholder="Your message here..."
+                            onChange={(e) => setMessage(e.target.value)}
+                          />
+                          <button
+                            onClick={handleMessageSubmit}
+                            className="btn btn-primary"
+                          >
+                            <i className="bi-send"></i>
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
