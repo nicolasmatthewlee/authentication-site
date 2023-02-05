@@ -260,24 +260,42 @@ export const Home = (props) => {
                     {Array.isArray(messages)
                       ? messages.map((m) =>
                           status === "admin" ? (
-                            <div className="w-100 mb-3" key={m._id}>
-                              <div className="card rounded-0 rounded-top">
-                                <div className="card-body">
+                            <div className="container w-100 mb-3" key={m._id}>
+                              <div className="row">
+                                <div
+                                  className="col-auto p-0"
+                                  style={{ fontWeight: "500" }}
+                                >
                                   {m.author ? (
-                                    <h6 className="card-title">{m.author}</h6>
-                                  ) : null}
-                                  <p className="card-text">{m.content}</p>
+                                    <p className="m-0">{m.author}</p>
+                                  ) : (
+                                    <p className="m-0">anonymous</p>
+                                  )}
                                 </div>
-                                <div className="card-footer text-muted">
+                                <p
+                                  className="col-auto text-muted p-0 m-0 ms-2"
+                                  style={{
+                                    fontSize: "12px",
+                                    transform: "translateY(4px)",
+                                  }}
+                                >
                                   {timeSince(m.datetime)}
+                                </p>
+                              </div>
+                              <div className="row">
+                                <div className="col-auto p-1 bg-light rounded border">
+                                  <p className="card-text px-2 m-0">
+                                    {m.content}
+                                  </p>
+                                  <button
+                                    onClick={() => handleDeleteMessage(m._id)}
+                                    className="position-relative btn btn-danger m-1"
+                                    style={{ fontSize: "13px" }}
+                                  >
+                                    Delete
+                                  </button>
                                 </div>
                               </div>
-                              <button
-                                onClick={() => handleDeleteMessage(m._id)}
-                                className="btn btn-danger rounded-0 rounded-bottom w-100"
-                              >
-                                Delete
-                              </button>
                             </div>
                           ) : (
                             <div className="container w-100 mb-3" key={m._id}>
