@@ -44,7 +44,10 @@ export const Home = (props) => {
     }
   };
 
-  const handleDeleteMessage = async (id) => {
+  const handleDeleteMessage = async (id, e) => {
+    e.target.setAttribute("disabled", true);
+    e.target.innerHTML =
+      "<i class='spinner-border spinner-border-sm'></i> Loading...";
     try {
       const response = await fetch(`${props.server}/delete`, {
         method: "post",
@@ -54,14 +57,10 @@ export const Home = (props) => {
       });
       const responseJSON = await response.json();
       const err = responseJSON.err;
-      if (err) console.log(err);
-      else {
-        console.log(responseJSON);
+      if (!err) {
         getMessages();
       }
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   const getUser = async () => {
@@ -302,7 +301,9 @@ export const Home = (props) => {
                                     {m.content}
                                   </p>
                                   <button
-                                    onClick={() => handleDeleteMessage(m._id)}
+                                    onClick={(e) =>
+                                      handleDeleteMessage(m._id, e)
+                                    }
                                     className="position-relative btn btn-danger m-1"
                                     style={{ fontSize: "13px" }}
                                   >
