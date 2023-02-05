@@ -10,7 +10,7 @@ import { Home } from "./pages/home";
 import { PageNotFound } from "./pages/page-not-found";
 
 export const App = () => {
-  const server = "http://127.0.0.1:8000";
+  const server = "http://127.0.0.1:2000";
 
   return (
     <div className="app">
