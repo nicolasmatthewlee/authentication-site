@@ -177,21 +177,34 @@ app.get("/user", (req, res, next) => {
   res.json({ username: req.user.username, status: req.user.status });
 });
 
-app.post("/message", (req, res, next) => {
-  // check if user is authenticated
-  if (!req.user) res.json({ err: "Unauthorized." });
-  // user authenticated
-  const message = new Message({
-    content: req.body.message,
-    author: req.user.username,
-    datetime: new Date(),
-  });
+app.post("/message", [
+  // validation
+  body("message")
+    .trim()
+    .escape()
+    .isLength({ min: 1 })
+    .withMessage("Message must not be empty.")
+    .isLength({ max: 200 })
+    .withMessage("Message must not exceed 200 characters."),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.json({ err: errors.errors });
 
-  message.save((err) => {
-    if (err) return next(err);
-    res.json({ err: false });
-  });
-});
+    // check if user is authenticated
+    if (!req.user) res.json({ err: "Unauthorized." });
+    // user authenticated
+    const message = new Message({
+      content: req.body.message,
+      author: req.user.username,
+      datetime: new Date(),
+    });
+
+    message.save((err) => {
+      if (err) return next(err);
+      res.json({ err: false });
+    });
+  },
+]);
 
 app.get("/message", (req, res, next) => {
   // check if user is authenticated

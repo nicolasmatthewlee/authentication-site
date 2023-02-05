@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import uniqid from "uniqid";
 
 export const Home = (props) => {
   const navigate = useNavigate();
@@ -14,9 +15,12 @@ export const Home = (props) => {
   const [password, setPassword] = useState("");
 
   const [logoutLoading, setLogoutLoading] = useState(false);
+  const [sendLoading, setSendLoading] = useState(false);
 
   const [authorized, setAuthorized] = useState(null);
   const [authorizationError, setAuthorizationError] = useState(null);
+
+  const [messageSubmitErrors, setMessageSubmitErrors] = useState([]);
 
   const handleSubmitPassword = async () => {
     try {
@@ -113,7 +117,9 @@ export const Home = (props) => {
     getMessages();
   }, []);
 
-  const handleMessageSubmit = async () => {
+  const handleMessageSubmit = async (e) => {
+    setSendLoading(true);
+
     try {
       const response = await fetch(`${props.server}/message`, {
         method: "POST",
@@ -124,11 +130,19 @@ export const Home = (props) => {
       const responseJSON = await response.json();
       const err = responseJSON.err;
 
-      if (err) console.log(err);
-      getMessages();
+      if (err) {
+        if (Array.isArray(err)) {
+          setMessageSubmitErrors(err);
+        } else setMessageSubmitErrors([{ msg: err }]);
+      } else {
+        setMessage("");
+        setMessageSubmitErrors([]);
+        getMessages();
+      }
     } catch (err) {
-      console.log(err);
+      setMessageSubmitErrors([{ msg: "An unknown error occurred." }]);
     }
+    setSendLoading(false);
   };
 
   const handleLogout = async () => {
@@ -354,14 +368,36 @@ export const Home = (props) => {
                             type="text"
                             placeholder="Your message here..."
                             onChange={(e) => setMessage(e.target.value)}
+                            value={message}
                           />
-                          <button
-                            onClick={handleMessageSubmit}
-                            className="btn btn-primary"
-                          >
-                            <i className="bi-send-fill"></i>
-                          </button>
+                          {sendLoading ? (
+                            <button
+                              onClick={(e) => handleMessageSubmit(e)}
+                              className="btn btn-primary"
+                              disabled
+                            >
+                              <i className="spinner-border spinner-border-sm"></i>
+                            </button>
+                          ) : (
+                            <button
+                              onClick={(e) => handleMessageSubmit(e)}
+                              className="btn btn-primary"
+                            >
+                              <i className="bi-send-fill"></i>
+                            </button>
+                          )}
                         </div>
+                        {messageSubmitErrors.length > 0 ? (
+                          <div className="list-group mt-2">
+                            <div className="list-group-item list-group-item-danger">
+                              {messageSubmitErrors.map((e) => (
+                                <p className="m-0" key={uniqid()}>
+                                  {e.msg}
+                                </p>
+                              ))}
+                            </div>
+                          </div>
+                        ) : null}
                       </div>
                     </div>
                   </div>
