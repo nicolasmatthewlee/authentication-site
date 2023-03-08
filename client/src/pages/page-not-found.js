@@ -2,7 +2,7 @@ export const PageNotFound = () => {
   return (
     <div>
       <h1 className="shadow-sm p-3 m-0">
-        <i className="bi-patch-check-fill" style={{ color: "black" }}></i>{" "}
+        {/* <i className="bi-patch-check-fill" style={{ color: "black" }}></i>{" "} */}
         <span className="ms-2">MessageChat</span>
       </h1>
 

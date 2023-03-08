@@ -71,7 +71,7 @@ export const SignUp = (props) => {
       </div>
 
       <h1 className="position-absolute top-0 shadow-sm p-3 m-0 w-100">
-        <i className="bi-patch-check-fill" style={{ color: "black" }}></i>{" "}
+        {/* <i className="bi-patch-check-fill" style={{ color: "black" }}></i>{" "} */}
         <span className="ms-2">MessageChat</span>
       </h1>
       <div className="row g-0 h-100" style={{ paddingTop: "80px" }}>
