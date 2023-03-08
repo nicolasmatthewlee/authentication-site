@@ -3,7 +3,7 @@ export const PageNotFound = () => {
     <div>
       <h1 className="shadow-sm p-3 m-0">
         <i className="bi-patch-check-fill" style={{ color: "black" }}></i>{" "}
-        <span className="ms-2">Authentication Corp.</span>
+        <span className="ms-2">MessageChat</span>
       </h1>
 
       <div className="container-fluid p-3 d-flex justify-content-center">
